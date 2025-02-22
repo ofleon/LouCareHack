@@ -48,18 +48,18 @@ const Request = () => {
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDifference = today.getMonth() - birthDate.getMonth();
-    
+
     // Check if the birthday has already occurred this year
     if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
       age--; // Decrease age if birthday hasn't occurred yet this year
     }
-    
+
 
     const newCase = {
       ...formData,
       id: Date.now().toString(),
       age,
-      status: "In Progress" as const,
+      status: "pending" as const,
       assignUnit: "Pending" as const,
     };
 

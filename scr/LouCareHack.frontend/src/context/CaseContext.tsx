@@ -5,6 +5,7 @@ interface CaseContextType {
   cases: Case[];
   addCase: (newCase: Case) => void;
   deleteCase: (id: string) => void;
+  updateCase: (updatedCase: Case) => void;
 }
 
 const CaseContext = createContext<CaseContextType | undefined>(undefined);
@@ -20,8 +21,12 @@ export function CaseProvider({ children }: { children: ReactNode }) {
     setCases(prev => prev.filter(c => c.id !== id));
   };
 
+  const updateCase = (updatedCase: Case) => {
+    setCases(prev => prev.map(c => c.id === updatedCase.id ? updatedCase : c));
+  };
+
   return (
-    <CaseContext.Provider value={{ cases, addCase, deleteCase }}>
+    <CaseContext.Provider value={{ cases, addCase, deleteCase, updateCase }}>
       {children}
     </CaseContext.Provider>
   );

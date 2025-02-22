@@ -13,10 +13,10 @@ import StatusBadge from "@/components/StatusBadge";
 import AssignUnit from "@/components/AssignUnit";
 import { useToast } from "@/hooks/use-toast";
 import { useCases } from "@/context/CaseContext";
-import { CASE_WORKERS } from "@/types/case";
+import { CASE_WORKERS, Case } from "@/types/case";
 
 const Dashboard = () => {
-  const { cases, deleteCase } = useCases();
+  const { cases, deleteCase, updateCase } = useCases();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -26,9 +26,21 @@ const Dashboard = () => {
       title: "Case deleted",
       description: "The case has been successfully removed.",
     });
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
+  };
+
+  const handleStatusChange = (id: string, newStatus: "pending" | "enrolled" | "closed") => {
+    const caseToUpdate = cases.find(c => c.id === id);
+    if (caseToUpdate) {
+      const updatedCase: Case = {
+        ...caseToUpdate,
+        status: newStatus
+      };
+      updateCase(updatedCase);
+      toast({
+        title: "Status updated",
+        description: `Case status has been updated to ${newStatus}.`,
+      });
+    }
   };
 
   return (
@@ -45,10 +57,10 @@ const Dashboard = () => {
         <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/request")}>
               New Case
         </Button>
-       
+
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -94,7 +106,11 @@ const Dashboard = () => {
                       <AssignUnit assignUnit={c.assignUnit} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge status={c.status} />
+                      <StatusBadge
+                        status={c.status}
+                        isEditable={true}
+                        onStatusChange={(newStatus) => handleStatusChange(c.id, newStatus)}
+                      />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Button

@@ -6,7 +6,7 @@ export interface Case {
   ssn?: string;
   caseWorker: string;
   assignUnit: "Pending" | "Assigned";
-  status: "In Progress" | "Not Submitted" | "Completed";
+  status: "pending" | "enrolled" | "closed";
   dateOfBirth: string;
   disability?: string;
   currentLocation?: string;
