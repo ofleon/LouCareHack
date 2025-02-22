@@ -36,14 +36,12 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold text-gray-800">
-            Case List - Dashboard
+            Dashboard: Case Lists
           </h1>
-          <Button variant="outline" onClick={() => navigate("/")}>
-              Return Home
-          </Button>
+        <Button variant="destructive" onClick={() => navigate("/")}>
+              Log Out
+        </Button>
         </div>
-
-
         <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/request")}>
               New Case
         </Button>
