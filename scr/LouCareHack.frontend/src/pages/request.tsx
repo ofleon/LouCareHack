@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useCases } from "@/context/CaseContext";
 import { CASE_WORKERS } from "@/types/case";
+import AssignUnit from "@/components/AssignUnit";
 
 const Request = () => {
   const navigate = useNavigate();
@@ -45,13 +46,21 @@ const Request = () => {
     // Calculate age from date of birth
     const birthDate = new Date(formData.dateOfBirth);
     const today = new Date();
-    const age = today.getFullYear() - birthDate.getFullYear();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+    
+    // Check if the birthday has already occurred this year
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+      age--; // Decrease age if birthday hasn't occurred yet this year
+    }
+    
 
     const newCase = {
       ...formData,
       id: Date.now().toString(),
       age,
-      status: "Not Submitted" as const,
+      status: "In Progress" as const,
+      assignUnit: "Pending" as const,
     };
 
     addCase(newCase);

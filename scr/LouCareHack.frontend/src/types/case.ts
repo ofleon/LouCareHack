@@ -5,6 +5,7 @@ export interface Case {
   age: number;
   ssn?: string;
   caseWorker: string;
+  assignUnit: "Pending" | "Assigned";
   status: "In Progress" | "Not Submitted" | "Completed";
   dateOfBirth: string;
   disability?: string;

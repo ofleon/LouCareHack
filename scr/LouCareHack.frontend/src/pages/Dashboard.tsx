@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -9,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import StatusBadge from "@/components/StatusBadge";
+import AssignUnit from "@/components/AssignUnit";
 import { useToast } from "@/hooks/use-toast";
 import { useCases } from "@/context/CaseContext";
 import { CASE_WORKERS } from "@/types/case";
@@ -16,6 +18,7 @@ import { CASE_WORKERS } from "@/types/case";
 const Dashboard = () => {
   const { cases, deleteCase } = useCases();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleDelete = (id: string) => {
     deleteCase(id);
@@ -23,6 +26,9 @@ const Dashboard = () => {
       title: "Case deleted",
       description: "The case has been successfully removed.",
     });
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
   };
 
   return (
@@ -30,10 +36,18 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-semibold text-gray-800">
-            Case Worker Dashboard
+            Case List - Dashboard
           </h1>
+          <Button variant="outline" onClick={() => navigate("/")}>
+              Return Home
+          </Button>
         </div>
 
+
+        <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/request")}>
+              New Case
+        </Button>
+       
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -50,6 +64,9 @@ const Dashboard = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Case Worker
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Assigned Unit
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
@@ -74,6 +91,9 @@ const Dashboard = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {c.caseWorker}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <AssignUnit assignUnit={c.assignUnit} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusBadge status={c.status} />

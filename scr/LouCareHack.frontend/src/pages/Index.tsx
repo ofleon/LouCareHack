@@ -25,14 +25,14 @@ const Index = () => {
             onClick={handlePotentialResident}
             className="bg-primary text-white px-8 py-6 text-lg rounded-lg hover:bg-primary/90 transition-colors"
           >
-            Submit as Potential Resident
+            Submit Request
           </Button>
           <Button
             onClick={handleCaseWorker}
             variant="outline"
             className="border-2 px-8 py-6 text-lg rounded-lg hover:bg-accent transition-colors"
           >
-            Case Worker Login
+            Dashboard
           </Button>
         </div>
       </div>
