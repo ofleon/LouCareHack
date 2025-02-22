@@ -1,0 +1,6 @@
+@LouCareHack.API_HostAddress = http://localhost:5014
+
+GET {{LouCareHack.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
