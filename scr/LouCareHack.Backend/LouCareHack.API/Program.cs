@@ -80,6 +80,16 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(builder =>
+{
+    builder.AddDefaultPolicy(options =>
+    {
+        options.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin()
+        .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
 

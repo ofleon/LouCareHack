@@ -1,5 +1,7 @@
 ﻿using Asp.Versioning;
+using LouCareHack.API.Application.DTOs;
 using LouCareHack.API.Application.Helpers.Pagination;
+using LouCareHack.API.Application.Mappings;
 using LouCareHack.Application.Wrappers;
 using LouCareHack.Domain.Entities;
 using LouCareHack.Infrastructure.Interfaces;
