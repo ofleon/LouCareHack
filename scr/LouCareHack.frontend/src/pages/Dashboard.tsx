@@ -28,7 +28,7 @@ const Dashboard = () => {
     });
   };
 
-  const handleStatusChange = (id: string, newStatus: "pending" | "enrolled" | "closed") => {
+  const handleStatusChange = (id: string, newStatus: "Pending" | "Enrolled" | "Closed") => {
     const caseToUpdate = cases.find(c => c.id === id);
     if (caseToUpdate) {
       const updatedCase: Case = {
@@ -39,6 +39,22 @@ const Dashboard = () => {
       toast({
         title: "Status updated",
         description: `Case status has been updated to ${newStatus}.`,
+      });
+    }
+  };
+
+  
+  const handleAssignUnitChange = (id: string, newAssignUnit: "Waiting" | "Assigned") => {
+    const caseToUpdate = cases.find(c => c.id === id);
+    if (caseToUpdate) {
+      const updatedCase: Case = {
+        ...caseToUpdate,
+        assignUnit: newAssignUnit
+      };
+      updateCase(updatedCase);
+      toast({
+        title: "Status updated",
+        description: `Unit status has been updated to ${newAssignUnit}.`,
       });
     }
   };
@@ -103,7 +119,9 @@ const Dashboard = () => {
                       {c.caseWorker}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <AssignUnit assignUnit={c.assignUnit} />
+                      <AssignUnit assignUnit={c.assignUnit} 
+                        isEditable={true}
+                        onAssignUnitChange={(newAssignUnit) => handleAssignUnitChange(c.id, newAssignUnit)}/>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusBadge

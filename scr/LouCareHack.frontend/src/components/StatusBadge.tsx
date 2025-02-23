@@ -8,20 +8,20 @@ import {
 } from "@/components/ui/select";
 
 interface StatusBadgeProps {
-  status: "pending" | "enrolled" | "closed";
+  status: "Pending" | "Enrolled" | "Closed";
   className?: string;
-  onStatusChange?: (newStatus: "pending" | "enrolled" | "closed") => void;
+  onStatusChange?: (newStatus: "Pending" | "Enrolled" | "Closed") => void;
   isEditable?: boolean;
 }
 
 const StatusBadge = ({ status, className, onStatusChange, isEditable = false }: StatusBadgeProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "pending":
+      case "Pending":
         return "bg-status-pending text-white";
-      case "enrolled":
+      case "Enrolled":
         return "bg-status-progress text-white";
-      case "closed":
+      case "Closed":
         return "bg-status-completed text-white";
       default:
         return "bg-gray-200 text-gray-800";
@@ -38,9 +38,9 @@ const StatusBadge = ({ status, className, onStatusChange, isEditable = false }: 
           <SelectValue>{status}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="pending">pending</SelectItem>
-          <SelectItem value="enrolled">enrolled</SelectItem>
-          <SelectItem value="closed">closed</SelectItem>
+          <SelectItem value="Pending">Pending</SelectItem>
+          <SelectItem value="Enrolled">Enrolled</SelectItem>
+          <SelectItem value="Closed">Closed</SelectItem>
         </SelectContent>
       </Select>
     );

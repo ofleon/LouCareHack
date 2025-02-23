@@ -59,8 +59,8 @@ const Request = () => {
       ...formData,
       id: Date.now().toString(),
       age,
-      status: "pending" as const,
-      assignUnit: "Pending" as const,
+      status: "Pending" as const,
+      assignUnit: "Waiting" as const,
     };
 
     addCase(newCase);
