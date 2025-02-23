@@ -1,32 +1,36 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Case } from '../types/case';
+import { Case } from '@/types/case';
+import { mockCases } from '@/mock/cases';
 
 interface CaseContextType {
   cases: Case[];
   addCase: (newCase: Case) => void;
-  deleteCase: (id: string) => void;
   updateCase: (updatedCase: Case) => void;
+  deleteCase: (id: string) => void;
 }
 
 const CaseContext = createContext<CaseContextType | undefined>(undefined);
 
 export function CaseProvider({ children }: { children: ReactNode }) {
-  const [cases, setCases] = useState<Case[]>([]);
+  // Initialize with mock data
+  const [cases, setCases] = useState<Case[]>(mockCases);
 
   const addCase = (newCase: Case) => {
-    setCases(prev => [...prev, { ...newCase, id: Date.now().toString() }]);
-  };
-
-  const deleteCase = (id: string) => {
-    setCases(prev => prev.filter(c => c.id !== id));
+    setCases(prevCases => [...prevCases, newCase]);
   };
 
   const updateCase = (updatedCase: Case) => {
-    setCases(prev => prev.map(c => c.id === updatedCase.id ? updatedCase : c));
+    setCases(prevCases =>
+      prevCases.map(c => (c.id === updatedCase.id ? updatedCase : c))
+    );
+  };
+
+  const deleteCase = (id: string) => {
+    setCases(prevCases => prevCases.filter(c => c.id !== id));
   };
 
   return (
-    <CaseContext.Provider value={{ cases, addCase, deleteCase, updateCase }}>
+    <CaseContext.Provider value={{ cases, addCase, updateCase, deleteCase }}>
       {children}
     </CaseContext.Provider>
   );

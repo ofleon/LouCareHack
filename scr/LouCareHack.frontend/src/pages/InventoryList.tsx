@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Unit, PaginatedResponse } from "@/types/inventory";
+import { Unit } from "@/types/inventory";
+import { mockUnits } from "@/mock/inventory";
 
 const InventoryList = () => {
   const navigate = useNavigate();
@@ -10,55 +11,15 @@ const InventoryList = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUnits = async () => {
-      try {
-        const apiUrl = `/api/Unit/admin/list?page=1&pageSize=10`;
-        console.log('Fetching from:', apiUrl);
-
-        const response = await fetch(apiUrl, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_API_TOKEN}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
-        });
-
-        console.log('Response status:', response.status);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('API Error Response:', errorText);
-          throw new Error(`Failed to fetch inventory data: ${response.status} ${response.statusText}`);
-        }
-
-        const responseText = await response.text();
-        console.log('Raw response:', responseText);
-
-        let responseData: PaginatedResponse<Unit>;
-        try {
-          responseData = JSON.parse(responseText);
-        } catch (parseError) {
-          console.error('JSON Parse Error:', parseError);
-          throw new Error('Failed to parse response as JSON');
-        }
-
-        console.log('API Response:', responseData);
-
-        if (responseData.succeded && responseData.data?.items) {
-          setUnits(responseData.data.items);
-        } else {
-          throw new Error('Failed to fetch inventory data: Invalid response format');
-        }
-      } catch (err) {
-        console.error('Fetch error:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
+    // Simulate API call with mock data
+    const loadMockData = () => {
+      setTimeout(() => {
+        setUnits(mockUnits);
         setLoading(false);
-      }
+      }, 500); // Add a small delay to simulate API call
     };
 
-    fetchUnits();
+    loadMockData();
   }, []);
 
   if (loading) {

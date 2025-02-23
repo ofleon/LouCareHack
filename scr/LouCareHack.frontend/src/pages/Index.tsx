@@ -18,6 +18,7 @@ import AssignUnit from "@/components/AssignUnit";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handlePotentialResident = () => {
     navigate("/request");
@@ -30,7 +31,7 @@ const Index = () => {
   const [formData, setFormData] = useState({
     userName: "",
     password: ""
-  })
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -44,12 +45,24 @@ const Index = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
+    // Check for hardcoded admin credentials
+    if (formData.userName === "admin" && formData.password === "admin") {
+      toast({
+        title: "Login Successful",
+        description: "Welcome back, admin!",
+      });
+      navigate("/dashboard");
+    } else {
+      toast({
+        title: "Login Failed",
+        description: "Invalid credentials. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
+  // Check if form is filled out
+  const isFormValid = formData.userName.length > 0 && formData.password.length > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
@@ -57,7 +70,7 @@ const Index = () => {
         <div className="bg-white rounded-lg p-6 shadow-lg animate-fadeIn">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-4xl font-bold text-gray-900">LouCare Log In</h1>
-        
+
           </div>
           <form onSubmit={handleSubmit} className="space-y-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -85,8 +98,12 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <Button variant="default"
-            onClick={handlePotentialMain} className="w-full md:w-auto">
+            <Button
+              type="submit"
+              variant="default"
+              className="w-full md:w-auto"
+              disabled={!isFormValid}
+            >
               Log In
             </Button>
           </form>
