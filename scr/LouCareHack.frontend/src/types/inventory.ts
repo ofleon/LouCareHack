@@ -7,8 +7,9 @@ export interface Unit {
   type: string;
   capacity: number;
   unitStatusId: string;
+  unitStatusName: string;
   isActive: boolean;
-  createdAt: string;
+  createAt: string;
 }
 
 export interface CaseAssignment {
@@ -30,4 +31,17 @@ export interface User {
   email?: string;
   isActive: boolean;
   createdAt: string;
+}
+
+export interface PaginatedResponse<T> {
+  succeded: boolean;
+  message: string | null;
+  errors: string[];
+  data: {
+    items: T[];
+    currentPage: number;
+    totalPages: number;
+    pageSize: number;
+    totalCount: number;
+  };
 }
