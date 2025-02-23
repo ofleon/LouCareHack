@@ -1,63 +1,62 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useEffect, useState } from "react";
 import StatusBadge from "@/components/StatusBadge";
 import AssignUnit from "@/components/AssignUnit";
 import { useToast } from "@/hooks/use-toast";
-import { useCases } from "@/context/CaseContext";
-import { CASE_WORKERS, Case } from "@/types/case";
+import { Applicant, fetchApplicants } from "@/services/applicantService";
 
 const Dashboard = () => {
-  const { cases, deleteCase, updateCase } = useCases();
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [applicants, setApplicants] = useState<Applicant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const handleDelete = (id: string) => {
-    deleteCase(id);
+  useEffect(() => {
+    const loadApplicants = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchApplicants(currentPage, 10);
+        setApplicants(response.data.items);
+        setTotalPages(response.data.totalPages);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load applicants. Please try again later.');
+        console.error('Error loading applicants:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadApplicants();
+  }, [currentPage]);
+
+  const handleDelete = (userId: string) => {
+    setApplicants(prev => prev.filter(a => a.userId !== userId));
     toast({
       title: "Case deleted",
       description: "The case has been successfully removed.",
     });
   };
 
-  const handleStatusChange = (id: string, newStatus: "Pending" | "Enrolled" | "Closed") => {
-    const caseToUpdate = cases.find(c => c.id === id);
-    if (caseToUpdate) {
-      const updatedCase: Case = {
-        ...caseToUpdate,
-        status: newStatus
-      };
-      updateCase(updatedCase);
-      toast({
-        title: "Status updated",
-        description: `Case status has been updated to ${newStatus}.`,
-      });
-    }
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
 
-
-  const handleAssignUnitChange = (id: string, newAssignUnit: "Waiting" | "Assigned") => {
-    const caseToUpdate = cases.find(c => c.id === id);
-    if (caseToUpdate) {
-      const updatedCase: Case = {
-        ...caseToUpdate,
-        assignUnit: newAssignUnit
-      };
-      updateCase(updatedCase);
-      toast({
-        title: "Status updated",
-        description: `Unit status has been updated to ${newAssignUnit}.`,
-      });
-    }
-  };
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl text-red-500">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
@@ -66,16 +65,16 @@ const Dashboard = () => {
           <h1 className="text-3xl font-semibold text-gray-800">
             Dashboard: Case Lists
           </h1>
-        <Button variant="destructive" onClick={() => navigate("/")}>
-              Log Out
-        </Button>
+          <Button variant="destructive" onClick={() => navigate("/")}>
+            Log Out
+          </Button>
         </div>
         <div className="flex gap-4">
           <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/requestdashboard")}>
                 New Case
           </Button>
           <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/inventory")}>
-                Inventory List
+            Inventory List
           </Button>
         </div>
 
@@ -88,19 +87,16 @@ const Dashboard = () => {
                     Name
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Age
+                    Email
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Location
+                    Phone
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Case Worker
+                    Condition
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Assigned Unit
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    Gender
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -108,38 +104,31 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {cases.map((c) => (
+                {applicants.map((applicant) => (
                   <tr
-                    key={c.id}
+                    key={applicant.userId}
                     className="hover:bg-gray-50 transition-colors duration-150"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {c.firstName} {c.lastName}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{c.age}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {c.currentLocation}
+                      {applicant.firstName} {applicant.lastName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {c.caseWorker}
+                      {applicant.email}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <AssignUnit assignUnit={c.assignUnit}
-                        isEditable={true}
-                        onAssignUnitChange={(newAssignUnit) => handleAssignUnitChange(c.id, newAssignUnit)}/>
+                      {applicant.phoneNumber || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge
-                        status={c.status}
-                        isEditable={true}
-                        onStatusChange={(newStatus) => handleStatusChange(c.id, newStatus)}
-                      />
+                      {applicant.condition.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {applicant.gender.trim()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => handleDelete(c.id)}
+                        onClick={() => handleDelete(applicant.userId)}
                       >
                         Delete
                       </Button>
@@ -149,6 +138,27 @@ const Dashboard = () => {
               </tbody>
             </table>
           </div>
+          {totalPages > 1 && (
+            <div className="px-6 py-4 flex justify-center space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <span className="px-4 py-2">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
