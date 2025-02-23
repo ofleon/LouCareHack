@@ -4,9 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LouCareHack.Infrastructure.Repository;
 
-public class CaseRepository(LouCareDbContext context) : ICase
+public class CaseRepository(LouCareDbContext context, ICaseAssignment caseAssignment) : ICase
 {
     private readonly LouCareDbContext _context = context;
+
+    private readonly ICaseAssignment _caseAssignment = caseAssignment;
 
     public async Task<Case?> GetDetailByIdAsync(Guid id) =>
         await _context.Cases
@@ -24,6 +26,10 @@ public class CaseRepository(LouCareDbContext context) : ICase
         await _context.SaveChangesAsync(cancellationToken);
 
         return entity;
+    }
+    public async Task<bool> GetCaseAssignmentStatus(Guid caseId){
+        var caseAssignment = await _caseAssignment.GetCaseAssignmentByCaseIdAsync(caseId);
+        return caseAssignment != null;
     }
 
     public async Task UpdateAsync(Case entity, CancellationToken cancellationToken = default)
