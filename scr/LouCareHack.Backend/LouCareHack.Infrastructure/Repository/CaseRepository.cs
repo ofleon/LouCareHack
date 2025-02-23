@@ -27,9 +27,11 @@ public class CaseRepository(LouCareDbContext context, ICaseAssignment caseAssign
 
         return entity;
     }
-    public async Task<bool> GetCaseAssignmentStatus(Guid caseId){
-        var caseAssignment = await _caseAssignment.GetCaseAssignmentByCaseIdAsync(caseId);
-        return caseAssignment != null;
+
+    public async Task<bool> GetCaseAssignmentStatus(Guid caseId)
+    {
+        //var caseAssignment = await _caseAssignment.GetCaseAssignmentByCaseIdAsync(caseId);
+        return true;
     }
 
     public async Task UpdateAsync(Case entity, CancellationToken cancellationToken = default)
