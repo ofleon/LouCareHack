@@ -6,6 +6,7 @@ import InventoryList from './pages/InventoryList';
 import { Toaster } from "@/components/ui/toaster";
 import { CaseProvider } from './context/CaseContext';
 import Main from './pages/Main';
+import RequestDashboard from './pages/requestDashbaord';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/index" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/requestdashboard" element={<RequestDashboard />} />
           <Route path="/request" element={<Request />} />
           <Route path="/inventory" element={<InventoryList />} />
         </Routes>

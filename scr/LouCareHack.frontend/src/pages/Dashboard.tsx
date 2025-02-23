@@ -71,7 +71,7 @@ const Dashboard = () => {
         </Button>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/request")}>
+          <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/requestdashboard")}>
                 New Case
           </Button>
           <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/inventory")}>
