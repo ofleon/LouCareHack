@@ -10,11 +10,17 @@ public partial class CaseDTO
 
     public Guid? CaseManagerId { get; set; }
 
+    public string CaseManagerName { get; set; }
+
     public Guid CaseStatusId { get; set; }
+
+    public string CaseStatusName { get; set; }
 
     public int Priority { get; set; }
 
     public DateTime CaseDate { get; set; }
 
     public DateTime CreateAt { get; set; }
+
+    public bool AssignedStatus { get; set; }
 }
