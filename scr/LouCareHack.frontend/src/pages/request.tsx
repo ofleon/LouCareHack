@@ -11,13 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useCases } from "@/context/CaseContext";
-import { Case } from "@/types/case";
+import { createApplicant } from "@/services/applicantService";
 
 const Request = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { addCase } = useCases();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -39,8 +37,7 @@ const Request = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newCase: Case = {
-      userId: Date.now().toString(),
+    const newApplicant = {
       firstName: formData.firstName,
       lastName: formData.lastName,
       doB: new Date().toISOString(),
@@ -60,7 +57,7 @@ const Request = () => {
     };
 
     try {
-      addCase(newCase);
+      await createApplicant(newApplicant);
 
       toast({
         title: "Request Submitted",

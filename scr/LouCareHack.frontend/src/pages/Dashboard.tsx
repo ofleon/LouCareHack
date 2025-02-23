@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import StatusBadge from "@/components/StatusBadge";
 import AssignUnit from "@/components/AssignUnit";
@@ -8,20 +8,34 @@ import { Applicant, fetchApplicants } from "@/services/applicantService";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const loadApplicants = async () => {
       try {
         setLoading(true);
+        // Get API data
         const response = await fetchApplicants(currentPage, 10);
-        setApplicants(response.data.items);
-        setTotalPages(response.data.totalPages);
+        const apiApplicants = response.data.items;
+
+        // Get local storage data
+        const localApplicants = JSON.parse(localStorage.getItem('applicants') || '[]');
+
+        // Combine and deduplicate by userId
+        const combinedApplicants = [...apiApplicants, ...localApplicants];
+        const uniqueApplicants = Array.from(
+          new Map(combinedApplicants.map(item => [item.userId, item])).values()
+        );
+
+        setApplicants(uniqueApplicants);
+        setTotalPages(Math.ceil(uniqueApplicants.length / 10));
         setError(null);
       } catch (err) {
         setError('Failed to load applicants. Please try again later.');
@@ -32,14 +46,35 @@ const Dashboard = () => {
     };
 
     loadApplicants();
-  }, [currentPage]);
+  }, [currentPage, refreshKey]);
 
-  const handleDelete = (userId: string) => {
-    setApplicants(prev => prev.filter(a => a.userId !== userId));
-    toast({
-      title: "Case deleted",
-      description: "The case has been successfully removed.",
-    });
+  // Force refresh when returning from other pages
+  useEffect(() => {
+    setRefreshKey(prev => prev + 1);
+  }, [location.pathname]);
+
+  const handleDelete = async (userId: string) => {
+    try {
+      // Remove from local storage
+      const localApplicants = JSON.parse(localStorage.getItem('applicants') || '[]');
+      const updatedApplicants = localApplicants.filter((a: Applicant) => a.userId !== userId);
+      localStorage.setItem('applicants', JSON.stringify(updatedApplicants));
+
+      // Update UI
+      setApplicants(prev => prev.filter(a => a.userId !== userId));
+
+      toast({
+        title: "Case deleted",
+        description: "The case has been successfully removed.",
+      });
+    } catch (error) {
+      console.error('Error deleting case:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete case. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (loading) {
