@@ -8,13 +8,13 @@ public class CaseMapHelper(ICaseAssignment caseAssignment)
 {
     private readonly ICaseAssignment _caseAssignment = caseAssignment;
 
-    public static CaseDTO MapUnitDTO(Case cas)
+    public static CaseDTO MapCaseDTO(Case cas)
     {
         return new CaseDTO();
         
     }
-    
+
     //public async Task<bool> GetCaseAssignmentStatus(Guid caseId) =>
     //    await _caseAssignment.GetCaseAssignmentStatus(caseId);
-    
+
 }
