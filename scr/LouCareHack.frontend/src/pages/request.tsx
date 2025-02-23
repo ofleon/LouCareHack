@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useCases } from "@/context/CaseContext";
-import { CASE_WORKERS } from "@/types/case";
-import AssignUnit from "@/components/AssignUnit";
+import { Case } from "@/types/case";
 
 const Request = () => {
   const navigate = useNavigate();
@@ -22,13 +21,10 @@ const Request = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    dateOfBirth: "",
+    email: "",
     phoneNumber: "",
-    currentLocation: "",
-    disability: "",
-    veteranStatus: "no" as "yes" | "no",
-    housingNeeds: "",
-    caseWorker: "",
+    gender: "",
+    condition: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,39 +36,48 @@ const Request = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Calculate age from date of birth
-    const birthDate = new Date(formData.dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDifference = today.getMonth() - birthDate.getMonth();
-
-    // Check if the birthday has already occurred this year
-    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-      age--; // Decrease age if birthday hasn't occurred yet this year
-    }
-
-
-    const newCase = {
-      ...formData,
-      id: Date.now().toString(),
-      age,
-      status: "Pending" as const,
-      assignUnit: "Waiting" as const,
+    const newCase: Case = {
+      userId: Date.now().toString(),
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      doB: new Date().toISOString(),
+      phoneNumber: formData.phoneNumber || null,
+      email: formData.email,
+      gender: formData.gender,
+      isActive: true,
+      createAt: new Date().toISOString(),
+      condition: {
+        id: "1",
+        name: formData.condition
+      },
+      conditionId: "1",
+      contactId: null,
+      contact: null,
+      user: null
     };
 
-    addCase(newCase);
+    try {
+      addCase(newCase);
 
-    toast({
-      title: "Request Submitted",
-      description: "Your request has been received. A case worker will contact you soon.",
-    });
+      toast({
+        title: "Request Submitted",
+        description: "Your request has been received and will be reviewed shortly.",
+      });
 
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+    } catch (error) {
+      console.error('Error submitting case:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit request. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -80,9 +85,9 @@ const Request = () => {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg p-6 shadow-lg animate-fadeIn">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">Housing Request Form</h2>
-            <Button variant="outline" onClick={() => navigate("/")}>
-              Return Home
+            <h2 className="text-2xl font-semibold">New Case Form</h2>
+            <Button variant="outline" onClick={() => navigate("/dashboard")}>
+              Back to Dashboard
             </Button>
           </div>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -109,95 +114,73 @@ const Request = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
-                    id="dateOfBirth"
-                    type="date"
-                    value={formData.dateOfBirth}
+                    id="email"
+                    type="email"
+                    value={formData.email}
                     onChange={handleChange}
+                    placeholder="Enter email"
                     required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phoneNumber">Phone Number (if available)</Label>
-                  <Input
-                    id="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    placeholder="Enter phone number"
                   />
                 </div>
               </div>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="currentLocation">Current Location</Label>
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
                   <Input
-                    id="currentLocation"
-                    value={formData.currentLocation}
+                    id="phoneNumber"
+                    value={formData.phoneNumber}
                     onChange={handleChange}
-                    placeholder="Where can we find you?"
+                    placeholder="Enter phone number"
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="disability">Disability (optional)</Label>
-                  <Input
-                    id="disability"
-                    value={formData.disability}
-                    onChange={handleChange}
-                    placeholder="Enter disability if any"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="veteranStatus">Are you a veteran?</Label>
+                  <Label htmlFor="gender">Gender</Label>
                   <Select
-                    value={formData.veteranStatus}
-                    onValueChange={(value) => handleSelectChange("veteranStatus", value)}
+                    value={formData.gender}
+                    onValueChange={(value) => handleSelectChange("gender", value)}
+                    required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="yes">Yes</SelectItem>
-                      <SelectItem value="no">No</SelectItem>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="housingNeeds">
-                    Specific Housing Needs (optional)
-                  </Label>
-                  <Input
-                    id="housingNeeds"
-                    value={formData.housingNeeds}
-                    onChange={handleChange}
-                    placeholder="Any specific requirements?"
-                  />
+                  <Label htmlFor="condition">Medical Condition</Label>
+                  <Select
+                    value={formData.condition}
+                    onValueChange={(value) => handleSelectChange("condition", value)}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select condition" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Cancer">Cancer</SelectItem>
+                      <SelectItem value="Terminal Illness">Terminal Illness</SelectItem>
+                      <SelectItem value="Chronic Medical Condition">Chronic Medical Condition</SelectItem>
+                      <SelectItem value="Physical Disability">Physical Disability</SelectItem>
+                      <SelectItem value="Mental Health Condition">Mental Health Condition</SelectItem>
+                      <SelectItem value="Elderly">Elderly</SelectItem>
+                      <SelectItem value="General">General</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
-            <div>
-              <Label htmlFor="caseWorker">Preferred Case Worker</Label>
-              <Select
-                value={formData.caseWorker}
-                onValueChange={(value) => handleSelectChange("caseWorker", value)}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select case worker" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CASE_WORKERS.map((worker) => (
-                    <SelectItem key={worker.id} value={worker.name}>
-                      {worker.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex justify-end space-x-4">
+              <Button type="submit" className="w-full md:w-auto">
+                Submit Case
+              </Button>
             </div>
-            <Button type="submit" className="w-full md:w-auto">
-              Submit Request
-            </Button>
           </form>
         </div>
       </div>

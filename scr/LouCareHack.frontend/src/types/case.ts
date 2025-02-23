@@ -1,18 +1,21 @@
 export interface Case {
-  id: string;
+  userId: string;
   firstName: string;
   lastName: string;
-  age: number;
-  ssn?: string;
-  caseWorker: string;
-  assignUnit: "Waiting" | "Assigned";
-  status: "Pending" | "Enrolled" | "Closed";
-  dateOfBirth: string;
-  disability?: string;
-  currentLocation?: string;
-  phoneNumber?: string;
-  veteranStatus?: "yes" | "no";
-  housingNeeds?: string;
+  doB: string;
+  phoneNumber: string | null;
+  email: string;
+  gender: string;
+  isActive: boolean;
+  createAt: string;
+  condition: {
+    id: string;
+    name: string;
+  };
+  conditionId: string;
+  contactId: string | null;
+  contact: null;
+  user: null;
 }
 
 export interface CaseWorker {
