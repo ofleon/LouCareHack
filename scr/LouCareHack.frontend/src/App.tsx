@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { CaseProvider } from './context/CaseContext';
 import Main from './pages/Main';
 import RequestDashboard from './pages/requestDashbaord';
+import MatchedHousing from './pages/MatchedHousing';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/requestdashboard" element={<RequestDashboard />} />
           <Route path="/request" element={<Request />} />
           <Route path="/inventory" element={<InventoryList />} />
+          <Route path="/matched-housing" element={<MatchedHousing />} />
         </Routes>
         <Toaster />
       </Router>

@@ -76,6 +76,9 @@ const Dashboard = () => {
           <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/inventory")}>
             Inventory List
           </Button>
+          <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/matched-housing")}>
+            Matched Housing
+          </Button>
         </div>
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
