@@ -1,6 +1,6 @@
-﻿namespace LouCareHack.Domain.Entities;
+﻿namespace LouCareHack.API.Application.DTOs;
 
-public partial class Unit
+public class UnitDTO
 {
     public Guid Id { get; set; }
 
@@ -18,11 +18,9 @@ public partial class Unit
 
     public Guid UnitStatusId { get; set; }
 
+    public string? UnitStatusName { get; set; }
+
     public bool IsActive { get; set; }
 
     public DateTime CreateAt { get; set; }
-
-    public virtual ICollection<CaseAssignment> CaseAssignments { get; set; } = new List<CaseAssignment>();
-
-    public virtual UnitStatus UnitStatus { get; set; } = null!;
 }

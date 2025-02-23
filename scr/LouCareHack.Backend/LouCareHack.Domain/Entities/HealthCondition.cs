@@ -1,9 +1,13 @@
-﻿using LouCareHack.Domain.SeedWork;
+﻿using System.Text.Json.Serialization;
 
 namespace LouCareHack.Domain.Entities;
 
-public class HealthCondition : BaseEntity
+public partial class HealthCondition
 {
+    public Guid Id { get; set; }
+
     public string Name { get; set; } = null!;
-    public string Description { get; set; } = null!;
+
+    [JsonIgnore]
+    public virtual ICollection<Applicant> Applicants { get; set; } = new List<Applicant>();
 }
