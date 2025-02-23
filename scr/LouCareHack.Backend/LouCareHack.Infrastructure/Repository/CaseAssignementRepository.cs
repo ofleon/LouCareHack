@@ -16,6 +16,18 @@ public class CaseAssignementRepository(LouCareDbContext context) : ICaseAssignme
 
     public IQueryable<CaseAssignment> GetListAsync() => _context.CaseAssignments;
 
+
+    public async Task<bool> GetCaseAssignmentByCaseIdAsync(Guid caseId)
+    {
+        var result = await _context.CaseAssignments
+        .Where(x => x.CaseId == caseId)
+        .FirstOrDefaultAsync();
+
+        if (result is null) return false;
+
+        return true;
+    }
+       
     public async Task<CaseAssignment> SaveAsync(CaseAssignment entity, CancellationToken cancellationToken = default)
     {
         _context.CaseAssignments.Add(entity);

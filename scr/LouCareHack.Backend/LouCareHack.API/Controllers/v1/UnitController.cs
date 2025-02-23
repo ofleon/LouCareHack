@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LouCareHack.API.Controllers.v1
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]

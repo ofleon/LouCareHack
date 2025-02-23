@@ -4,17 +4,31 @@ using LouCareHack.Infrastructure.Interfaces;
 
 namespace LouCareHack.API.Application.Mappings;
 
-public class CaseMapHelper(ICaseAssignment caseAssignment)
+public class CaseMapHelper
 {
-    private readonly ICaseAssignment _caseAssignment = caseAssignment;
 
-    public static CaseDTO MapCaseDTO(Case cas)
+    public static CaseDTO MapCaseDTO(Case cas, ICaseAssignment caseAssignment)
     {
-        return new CaseDTO();
+        return new CaseDTO()
+        {
+            Id = cas.Id,
+            CaseNumber = cas.CaseNumber,
+            UserId = cas.UserId,
+            CaseManagerId = cas.CaseManagerId,
+            CaseManagerName = cas.CaseManager?.FirstName,
+            CaseStatusId = cas.CaseStatusId,
+            CaseStatusName = cas.CaseStatus?.Name,
+            Priority = cas.Priority,
+            CaseDate = cas.CaseDate,
+            CreateAt = cas.CreateAt,
+            AssignedStatus = GetCaseAssignmentStatus(cas.Id, caseAssignment).Result
+        };
         
     }
 
-    //public async Task<bool> GetCaseAssignmentStatus(Guid caseId) =>
-    //    await _caseAssignment.GetCaseAssignmentStatus(caseId);
-
+    public static async Task<bool> GetCaseAssignmentStatus(Guid caseId, ICaseAssignment caseAssignment)
+    {
+        var h = await caseAssignment.GetCaseAssignmentByCaseIdAsync(caseId);
+        return h;
+    }
 }

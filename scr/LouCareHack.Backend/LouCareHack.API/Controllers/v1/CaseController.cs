@@ -10,20 +10,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LouCareHack.API.Controllers.v1
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
-    public class CaseController(ICase caseService) : ControllerBase
+    public class CaseController(ICase caseService, ICaseAssignment caseAssignment) : ControllerBase
     {
         private readonly ICase _caseService = caseService;
+        private readonly ICaseAssignment _caseAssignment = caseAssignment;
 
         [HttpGet("admin/list")]
         public async Task<IActionResult> GetListAsync(int page = 1, int pageSize = 10)
         {
             var result = _caseService.GetListAsync();
 
-            var resultquery = result.Select(x => CaseMapHelper.MapCaseDTO(x));
+            var resultquery = result.Select(x => CaseMapHelper.MapCaseDTO(x, _caseAssignment));
 
             var rtn = await PagedList<CaseDTO>.CreateAsync(resultquery, page, pageSize);
 

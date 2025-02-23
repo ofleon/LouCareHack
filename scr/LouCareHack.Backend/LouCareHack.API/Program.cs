@@ -80,14 +80,14 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddCors(builder =>
+builder.Services.AddCors(options =>
 {
-    builder.AddDefaultPolicy(options =>
+    options.AddPolicy("AllowLocareApp", policy =>
     {
-        options.AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowAnyOrigin()
-        .AllowCredentials();
+        policy.WithOrigins("https://loucarehack.web.app", "https://loucarehack.firebaseapp.com/") 
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -101,6 +101,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowLocareApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
