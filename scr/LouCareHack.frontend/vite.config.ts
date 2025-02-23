@@ -11,13 +11,9 @@ export default defineConfig(({ mode }) => {
       port: 8081,
       proxy: {
         '/api': {
-          target: 'https://app-loucareapp-001-dsf2h5fuczg0d3cx.eastus2-01.azurewebsites.net/api',
+          target: 'https://app-loucareapp-001-dsf2h5fuczg0d3cx.eastus2-01.azurewebsites.net',
           changeOrigin: true,
           secure: false,
-          rewrite: (path) => path.replace(/^\/api/, ''),
-          headers: {
-            'Authorization': `Bearer ${env.VITE_API_TOKEN}`,
-          },
           configure: (proxy, _options) => {
             proxy.on('proxyReq', (proxyReq, req, _res) => {
               proxyReq.setHeader('Authorization', `Bearer ${env.VITE_API_TOKEN}`);

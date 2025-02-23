@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Index from './pages/Index';
 import Dashboard from './pages/Dashboard';
 import Request from './pages/request';
@@ -9,21 +9,42 @@ import Main from './pages/Main';
 import RequestDashboard from './pages/requestDashbaord';
 import MatchedHousing from './pages/MatchedHousing';
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Main />,
+  },
+  {
+    path: "/index",
+    element: <Index />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+  },
+  {
+    path: "/requestdashboard",
+    element: <RequestDashboard />,
+  },
+  {
+    path: "/request",
+    element: <Request />,
+  },
+  {
+    path: "/inventory",
+    element: <InventoryList />,
+  },
+  {
+    path: "/matched-housing",
+    element: <MatchedHousing />,
+  },
+]);
+
 function App() {
   return (
     <CaseProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/index" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/requestdashboard" element={<RequestDashboard />} />
-          <Route path="/request" element={<Request />} />
-          <Route path="/inventory" element={<InventoryList />} />
-          <Route path="/matched-housing" element={<MatchedHousing />} />
-        </Routes>
-        <Toaster />
-      </Router>
+      <RouterProvider router={router} />
+      <Toaster />
     </CaseProvider>
   );
 }

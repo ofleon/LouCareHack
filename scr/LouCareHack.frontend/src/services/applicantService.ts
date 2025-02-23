@@ -29,14 +29,14 @@ export const fetchApplicants = async (page: number = 1, pageSize: number = 10): 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': `Bearer ${API_TOKEN}`
     };
 
     const response = await fetch(
-      `${API_BASE_URL}/Applicant/admin/list?page=${page}&pageSize=${pageSize}`,
+      `/api/Applicant/admin/list?page=${page}&pageSize=${pageSize}`,
       {
         method: 'GET',
         headers,
+        credentials: 'include',
       }
     );
 
