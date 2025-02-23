@@ -1,26 +1,35 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Unit } from "@/types/inventory";
-import { mockUnits } from "@/mock/inventory";
+import { Unit, PaginatedResponse } from "@/types/inventory";
+import { fetchUnits } from "@/services/unitService";
 
 const InventoryList = () => {
   const navigate = useNavigate();
   const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    // Simulate API call with mock data
-    const loadMockData = () => {
-      setTimeout(() => {
-        setUnits(mockUnits);
+    const loadUnits = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchUnits(currentPage, 10);
+        setUnits(response.data.items);
+        setTotalPages(response.data.totalPages);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load units. Please try again later.');
+        console.error('Error loading units:', err);
+      } finally {
         setLoading(false);
-      }, 500); // Add a small delay to simulate API call
+      }
     };
 
-    loadMockData();
-  }, []);
+    loadUnits();
+  }, [currentPage]);
 
   if (loading) {
     return (
@@ -96,13 +105,34 @@ const InventoryList = () => {
                           : 'bg-yellow-100 text-yellow-800'
                       }`}>
                         {unit.unitStatusName}
-                    </span>
+                      </span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          {totalPages > 1 && (
+            <div className="px-6 py-4 flex justify-center space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <span className="px-4 py-2">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
