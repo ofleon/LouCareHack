@@ -21,9 +21,11 @@ namespace LouCareHack.API.Controllers.v1
         {
             var result = _caseService.GetListAsync();
 
-            var rtn = await PagedList<Case>.CreateAsync(result, page, pageSize);
+            var resultquery = result.Select(x => CaseMapHelper.MapCaseDTO(x));
 
-            var res = new Response<PagedList<Case>>(rtn);
+            var rtn = await PagedList<CaseDTO>.CreateAsync(resultquery, page, pageSize);
+
+            var res = new Response<PagedList<CaseDTO>>(rtn);
             return Ok(res);
         }
 
