@@ -3,7 +3,6 @@ using LouCareHack.Domain.SeedWork;
 
 namespace LouCareHack.Infrastructure.Interfaces;
 
-public interface ICases : IRepository<Cases>
+public interface ICaseManager : IRepository<CaseManager>
 {
-
 }

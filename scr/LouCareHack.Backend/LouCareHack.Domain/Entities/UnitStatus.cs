@@ -2,12 +2,12 @@
 
 namespace LouCareHack.Domain.Entities;
 
-public partial class CaseStatus
+public partial class UnitStatus
 {
     public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
 
     [JsonIgnore]
-    public virtual ICollection<Case> Cases { get; set; } = new List<Case>();
+    public virtual ICollection<Unit> Units { get; set; } = [];
 }
