@@ -401,3 +401,6 @@ FodyWeavers.xsd
 
 # Cursor rules
 .cursor/rules/*
+
+# Environment variables
+.env
