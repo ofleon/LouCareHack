@@ -43,7 +43,7 @@ const Dashboard = () => {
     }
   };
 
-  
+
   const handleAssignUnitChange = (id: string, newAssignUnit: "Waiting" | "Assigned") => {
     const caseToUpdate = cases.find(c => c.id === id);
     if (caseToUpdate) {
@@ -70,9 +70,14 @@ const Dashboard = () => {
               Log Out
         </Button>
         </div>
-        <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/request")}>
-              New Case
-        </Button>
+        <div className="flex gap-4">
+          <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/request")}>
+                New Case
+          </Button>
+          <Button variant="outline" className="bg-primary text-primary-foreground" onClick={() => navigate("/inventory")}>
+                Inventory List
+          </Button>
+        </div>
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -119,7 +124,7 @@ const Dashboard = () => {
                       {c.caseWorker}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <AssignUnit assignUnit={c.assignUnit} 
+                      <AssignUnit assignUnit={c.assignUnit}
                         isEditable={true}
                         onAssignUnitChange={(newAssignUnit) => handleAssignUnitChange(c.id, newAssignUnit)}/>
                     </td>
