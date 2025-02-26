@@ -8,6 +8,7 @@ import { CaseProvider } from './context/CaseContext';
 import Main from './pages/Main';
 import RequestDashboard from './pages/requestDashbaord';
 import MatchedHousing from './pages/MatchedHousing';
+import AutoMatched from './pages/AutoMatched';
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
   {
     path: "/matched-housing",
     element: <MatchedHousing />,
+  },
+  {
+    path: "/auto-matched",
+    element: <AutoMatched />,
   },
 ]);
 

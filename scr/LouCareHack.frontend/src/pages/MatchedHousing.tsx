@@ -1,16 +1,188 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Applicant } from "@/services/applicantService";
 import { Unit } from "@/types/inventory";
-import { fetchApplicants } from "@/services/applicantService";
-import { fetchUnits } from "@/services/unitService";
 
 interface MatchedHousing {
   applicant: Applicant;
   unit: Unit | null;
   priority: number;
 }
+
+// Mock data for applicants
+const mockApplicants: Applicant[] = [
+  {
+    userId: "1",
+    firstName: "James",
+    lastName: "Wilson",
+    doB: "1965-05-12T10:30:00Z",
+    phoneNumber: "502-555-0101",
+    email: "jwilson@example.com",
+    gender: "Male",
+    isActive: true,
+    createAt: "2023-12-01T14:22:00Z",
+    condition: {
+      id: "1",
+      name: "Cancer"
+    },
+    conditionId: "1",
+    contactId: null,
+    contact: null,
+    user: null
+  },
+  {
+    userId: "2",
+    firstName: "Sarah",
+    lastName: "Johnson",
+    doB: "1980-10-25T08:45:00Z",
+    phoneNumber: "502-555-0102",
+    email: "sjohnson@example.com",
+    gender: "Female",
+    isActive: true,
+    createAt: "2023-12-05T09:30:00Z",
+    condition: {
+      id: "2",
+      name: "Terminal Illness"
+    },
+    conditionId: "2",
+    contactId: null,
+    contact: null,
+    user: null
+  },
+  {
+    userId: "3",
+    firstName: "Robert",
+    lastName: "Martinez",
+    doB: "1972-03-18T14:15:00Z",
+    phoneNumber: "502-555-0103",
+    email: "rmartinez@example.com",
+    gender: "Male",
+    isActive: true,
+    createAt: "2023-12-10T11:45:00Z",
+    condition: {
+      id: "3",
+      name: "Physical Disability"
+    },
+    conditionId: "3",
+    contactId: null,
+    contact: null,
+    user: null
+  },
+  {
+    userId: "4",
+    firstName: "Emily",
+    lastName: "Davis",
+    doB: "1995-07-30T16:20:00Z",
+    phoneNumber: "502-555-0104",
+    email: "edavis@example.com",
+    gender: "Female",
+    isActive: true,
+    createAt: "2023-12-15T13:10:00Z",
+    condition: {
+      id: "4",
+      name: "Mental Health Condition"
+    },
+    conditionId: "4",
+    contactId: null,
+    contact: null,
+    user: null
+  },
+  {
+    userId: "5",
+    firstName: "William",
+    lastName: "Thompson",
+    doB: "1945-11-11T09:45:00Z",
+    phoneNumber: "502-555-0105",
+    email: "wthompson@example.com",
+    gender: "Male",
+    isActive: true,
+    createAt: "2023-12-20T10:30:00Z",
+    condition: {
+      id: "5",
+      name: "Elderly"
+    },
+    conditionId: "5",
+    contactId: null,
+    contact: null,
+    user: null
+  },
+  {
+    userId: "6",
+    firstName: "Lisa",
+    lastName: "Brown",
+    doB: "1983-09-05T11:30:00Z",
+    phoneNumber: "502-555-0106",
+    email: "lbrown@example.com",
+    gender: "Female",
+    isActive: true,
+    createAt: "2023-12-25T15:45:00Z",
+    condition: {
+      id: "6",
+      name: "Chronic Medical Condition"
+    },
+    conditionId: "6",
+    contactId: null,
+    contact: null,
+    user: null
+  }
+];
+
+// Mock data for available units
+const mockAvailableUnits: Unit[] = [
+  {
+    id: "1",
+    address: "123 Main Street",
+    city: "Louisville",
+    state: "KY",
+    zip: "40202",
+    type: "Apartment",
+    capacity: 3,
+    unitStatusName: "Available",
+    unitStatusId: "1",
+    isActive: true,
+    createAt: "2023-11-01T10:00:00Z"
+  },
+  {
+    id: "2",
+    address: "456 Oak Avenue",
+    city: "Louisville",
+    state: "KY",
+    zip: "40203",
+    type: "Single Family Home",
+    capacity: 5,
+    unitStatusName: "Available",
+    unitStatusId: "1",
+    isActive: true,
+    createAt: "2023-11-05T09:30:00Z"
+  },
+  {
+    id: "4",
+    address: "101 Cedar Lane",
+    city: "Louisville",
+    state: "KY",
+    zip: "40205",
+    type: "Townhouse",
+    capacity: 4,
+    unitStatusName: "Available",
+    unitStatusId: "1",
+    isActive: true,
+    createAt: "2023-11-15T14:45:00Z"
+  },
+  {
+    id: "6",
+    address: "303 Birch Street",
+    city: "Louisville",
+    state: "KY",
+    zip: "40208",
+    type: "Single Family Home",
+    capacity: 6,
+    unitStatusName: "Available",
+    unitStatusId: "1",
+    isActive: true,
+    createAt: "2023-11-20T11:15:00Z"
+  }
+];
 
 const getPriorityScore = (condition: string): number => {
   const priorityMap: { [key: string]: number } = {
@@ -30,67 +202,29 @@ const getPriorityScore = (condition: string): number => {
 
 const MatchedHousing = () => {
   const navigate = useNavigate();
-  const [matchedHousing, setMatchedHousing] = useState<MatchedHousing[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const [applicantsResponse, unitsResponse] = await Promise.all([
-          fetchApplicants(1, 100),
-          fetchUnits(1, 100)
-        ]);
+  // Create matched housing data from our mock data
+  const createMatchedHousingData = (): MatchedHousing[] => {
+    // Map applicants to housing matches with priority scores
+    const matchedData = mockApplicants.map(applicant => ({
+      applicant,
+      priority: getPriorityScore(applicant.condition.name),
+      unit: null as Unit | null
+    }));
 
-        const availableUnits = unitsResponse.data.items.filter(
-          unit => unit.unitStatusName === 'Available'
-        );
+    // Sort by priority (highest first)
+    matchedData.sort((a, b) => b.priority - a.priority);
 
-        const matched = applicantsResponse.data.items.map(applicant => ({
-          applicant,
-          priority: getPriorityScore(applicant.condition.name),
-          unit: null as Unit | null
-        }));
+    // Assign units to applicants based on priority
+    for (let i = 0; i < Math.min(matchedData.length, mockAvailableUnits.length); i++) {
+      matchedData[i].unit = mockAvailableUnits[i];
+    }
 
-        // Sort by priority (highest first)
-        matched.sort((a, b) => b.priority - a.priority);
+    return matchedData;
+  };
 
-        // Assign units to applicants based on priority
-        matched.forEach((match, index) => {
-          if (index < availableUnits.length) {
-            match.unit = availableUnits[index];
-          }
-        });
-
-        setMatchedHousing(matched);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load matched housing data. Please try again later.');
-        console.error('Error loading matched housing:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-red-500">{error}</div>
-      </div>
-    );
-  }
+  // Initialize state with the matched housing data
+  const [matchedHousing] = useState<MatchedHousing[]>(createMatchedHousingData());
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">

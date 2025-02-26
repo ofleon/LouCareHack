@@ -1,51 +1,127 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Unit, PaginatedResponse } from "@/types/inventory";
-import { fetchUnits } from "@/services/unitService";
+import { useState } from "react";
+import { Unit } from "@/types/inventory";
+
+// Hard-coded mock data for inventory demo
+const mockUnits: Unit[] = [
+  {
+    id: "1",
+    address: "123 Main Street",
+    city: "Louisville",
+    state: "KY",
+    zip: "40202",
+    type: "Apartment",
+    capacity: 3,
+    unitStatusName: "Available",
+    unitStatusId: "1",
+    isActive: true,
+    createAt: new Date().toISOString()
+  },
+  {
+    id: "2",
+    address: "456 Oak Avenue",
+    city: "Louisville",
+    state: "KY",
+    zip: "40203",
+    type: "Single Family Home",
+    capacity: 5,
+    unitStatusName: "Available",
+    unitStatusId: "1",
+    isActive: true,
+    createAt: new Date().toISOString()
+  },
+  {
+    id: "3",
+    address: "789 Pine Road",
+    city: "Louisville",
+    state: "KY",
+    zip: "40204",
+    type: "Duplex",
+    capacity: 4,
+    unitStatusName: "Occupied",
+    unitStatusId: "2",
+    isActive: true,
+    createAt: new Date().toISOString()
+  },
+  {
+    id: "4",
+    address: "101 Cedar Lane",
+    city: "Louisville",
+    state: "KY",
+    zip: "40205",
+    type: "Townhouse",
+    capacity: 4,
+    unitStatusName: "Available",
+    unitStatusId: "1",
+    isActive: true,
+    createAt: new Date().toISOString()
+  },
+  {
+    id: "5",
+    address: "202 Maple Drive",
+    city: "Louisville",
+    state: "KY",
+    zip: "40206",
+    type: "Apartment",
+    capacity: 2,
+    unitStatusName: "Maintenance",
+    unitStatusId: "3",
+    isActive: true,
+    createAt: new Date().toISOString()
+  },
+  {
+    id: "6",
+    address: "303 Birch Street",
+    city: "Louisville",
+    state: "KY",
+    zip: "40208",
+    type: "Single Family Home",
+    capacity: 6,
+    unitStatusName: "Available",
+    unitStatusId: "1",
+    isActive: true,
+    createAt: new Date().toISOString()
+  },
+  {
+    id: "7",
+    address: "404 Willow Way",
+    city: "Louisville",
+    state: "KY",
+    zip: "40209",
+    type: "Apartment",
+    capacity: 3,
+    unitStatusName: "Occupied",
+    unitStatusId: "2",
+    isActive: true,
+    createAt: new Date().toISOString()
+  },
+  {
+    id: "8",
+    address: "505 Elm Boulevard",
+    city: "Louisville",
+    state: "KY",
+    zip: "40210",
+    type: "Group Home",
+    capacity: 8,
+    unitStatusName: "Available",
+    unitStatusId: "1",
+    isActive: true,
+    createAt: new Date().toISOString()
+  }
+];
 
 const InventoryList = () => {
   const navigate = useNavigate();
-  const [units, setUnits] = useState<Unit[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [units] = useState<Unit[]>(mockUnits);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(mockUnits.length / itemsPerPage);
 
-  useEffect(() => {
-    const loadUnits = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchUnits(currentPage, 10);
-        setUnits(response.data.items);
-        setTotalPages(response.data.totalPages);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load units. Please try again later.');
-        console.error('Error loading units:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUnits();
-  }, [currentPage]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-red-500">{error}</div>
-      </div>
-    );
-  }
+  // Get current page items
+  const indexOfLastUnit = currentPage * itemsPerPage;
+  const indexOfFirstUnit = indexOfLastUnit - itemsPerPage;
+  const currentUnits = units.slice(indexOfFirstUnit, indexOfLastUnit);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
@@ -88,7 +164,7 @@ const InventoryList = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {units.map((unit) => (
+                {currentUnits.map((unit) => (
                   <tr key={unit.id} className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4 whitespace-nowrap">{unit.address}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{unit.city}</td>

@@ -13,25 +13,38 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { createApplicant } from "@/services/applicantService";
 
+export interface RequestFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  gender: string;
+  condition: string;
+  age: string;
+  location: string;
+}
+
 const Request = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RequestFormData>({
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: "",
     gender: "",
     condition: "",
+    age: "",
+    location: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,13 +72,30 @@ const Request = () => {
     try {
       await createApplicant(newApplicant);
 
+      // Store the new applicant in localStorage for the demo
+      const dashboardApplicant = {
+        userId: Date.now().toString(), // Generate a unique ID
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        age: parseInt(formData.age) || 25,
+        location: formData.location || "Louisville",
+        caseWorker: "Unassigned", // New applicants start unassigned
+        assignedUnit: "Waiting",
+        status: "Open"
+      };
+
+      // Get existing stored applicants or initialize empty array
+      const storedApplicants = JSON.parse(localStorage.getItem('demoApplicants') || '[]');
+      storedApplicants.push(dashboardApplicant);
+      localStorage.setItem('demoApplicants', JSON.stringify(storedApplicants));
+
       toast({
         title: "Request Submitted",
         description: "Your request has been received and will be reviewed shortly.",
       });
 
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/");
       }, 1500);
     } catch (error) {
       console.error('Error submitting case:', error);
@@ -83,93 +113,181 @@ const Request = () => {
         <div className="bg-white rounded-lg p-6 shadow-lg animate-fadeIn">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold">New Case Form</h2>
-            <Button variant="outline" onClick={() => navigate("/dashboard")}>
-              Back to Dashboard
+            <Button variant="outline" onClick={() => navigate("/")}>
+              Back to Home
             </Button>
           </div>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
+            {/* Personal Information Section */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Personal Information
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="firstName"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    First Name *
+                  </label>
+                  <input
                     id="firstName"
+                    name="firstName"
+                    type="text"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                     value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="Enter first name"
-                    required
+                    onChange={handleInputChange}
                   />
                 </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="lastName"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Last Name *
+                  </label>
+                  <input
                     id="lastName"
+                    name="lastName"
+                    type="text"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                     value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Enter last name"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Enter email"
-                    required
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
-                  <Input
-                    id="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    placeholder="Enter phone number"
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="age"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Age *
+                  </label>
+                  <input
+                    id="age"
+                    name="age"
+                    type="number"
                     required
+                    min="18"
+                    max="120"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                    value={formData.age}
+                    onChange={handleInputChange}
                   />
                 </div>
-                <div>
-                  <Label htmlFor="gender">Gender</Label>
-                  <Select
-                    value={formData.gender}
-                    onValueChange={(value) => handleSelectChange("gender", value)}
-                    required
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="location"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    Current Location *
+                  </label>
+                  <input
+                    id="location"
+                    name="location"
+                    type="text"
+                    required
+                    placeholder="Neighborhood or area in Louisville"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                  />
                 </div>
-                <div>
-                  <Label htmlFor="condition">Medical Condition</Label>
-                  <Select
-                    value={formData.condition}
-                    onValueChange={(value) => handleSelectChange("condition", value)}
-                    required
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select condition" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Cancer">Cancer</SelectItem>
-                      <SelectItem value="Terminal Illness">Terminal Illness</SelectItem>
-                      <SelectItem value="Chronic Medical Condition">Chronic Medical Condition</SelectItem>
-                      <SelectItem value="Physical Disability">Physical Disability</SelectItem>
-                      <SelectItem value="Mental Health Condition">Mental Health Condition</SelectItem>
-                      <SelectItem value="Elderly">Elderly</SelectItem>
-                      <SelectItem value="General">General</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    Email Address *
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="phoneNumber"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Phone Number *
+                  </label>
+                  <input
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    type="tel"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                    value={formData.phoneNumber}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="gender"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Gender *
+                  </label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                    value={formData.gender}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Non-binary">Non-binary</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="condition"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Medical Condition (if any)
+                  </label>
+                  <select
+                    id="condition"
+                    name="condition"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                    value={formData.condition}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">None</option>
+                    <option value="Cancer">Cancer</option>
+                    <option value="Terminal Illness">Terminal Illness</option>
+                    <option value="Physical Disability">Physical Disability</option>
+                    <option value="Mental Health">Mental Health</option>
+                    <option value="Chronic Medical Condition">Chronic Medical Condition</option>
+                    <option value="Elderly">Elderly</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
               </div>
             </div>
